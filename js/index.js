@@ -1,5 +1,6 @@
+const name = document.getElementById('username').value
+
 function getRepositories() {
-    const name = document.getElementById('username').value
     const pathURL = `https://api.github.com/users/${name}/repos`
 
     const req = new XMLHttpRequest(); 
@@ -16,10 +17,12 @@ function displayRepositories() {
     const repos = JSON.parse(this.responseText);
     // parses string and makes it a js object. 
     // this.responseText is the body of the text
-    debugger
+    // debugger
     const repoList = 
     '<ul>' + repos
       .map(
+        // repos.map do |repo|
+        // line 26 and 27
         repo => {
             const dataUsername = "data-username='" + repo.owner.login + '"'
             const dataRepoName = 'data-repository="' + repo.name + '"' 
@@ -30,39 +33,43 @@ function displayRepositories() {
               <a href="#" ${dataRepoName} ${dataUsername} onclick="getCommits(this)">Get Commits</a><br>
               <a href="#" ${dataRepoName} ${dataUsername} onclick="getBranches(this)">Get Branches</a></li>
             </li>`
-   
-            //   '<li>' +
-        //   `${repo.name}` +
-        //   ' - <a href="#" data-repo="' +
-        //   `${repo.name}` +
-        //   '" onclick="getCommits(this)">Get Commits </a></li>' 
         }
       )
-      .join('') + '</ul>';
+      .join('') + 
+      '</ul>';
+      // debugger
     document.getElementById('repositories').innerHTML = repoList;
   }
    
 
   function getCommits(el) {
-    const user = document.getElementById('username').value
-    const name = el.dataset.repo;
+    const thisRepo = el.dataset.repository;
     const req = new XMLHttpRequest();
-    req.addEventListener('load', displayCommits);
-    req.open('GET', `https://api.github.com/users/${user}/${name}/commits`);
+    req.addEventListener('load', displayCommits());
+    req.open('GET', `https://api.github.com/repos/${name}/${thisRepo}/commits`);
     req.send();
   }
 
   function displayCommits() {
     const commits = JSON.parse(this.responseText);
-    const commitsList = `<ul>${commits
+    const commitsList = 
+    '<ul>' + commits
       .map(
-        commit =>
-          '<li><strong>' +
-          commit.author.fullName +
-          '</strong> - ' +
+        commit => 
+          '<li><h3>' +
+          commit.commit.author.name +
+          ' (' +
+          commit.author.login +
+          ')</h3>' +
           commit.commit.message +
           '</li>'
       )
-      .join('')}</ul>`;
+      .join('') + 
+      '</ul>';
+      // debugger
     document.getElementById('details').innerHTML = commitsList;
+  }
+
+  function getBranches(el) {
+    
   }
